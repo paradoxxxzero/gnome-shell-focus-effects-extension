@@ -29,27 +29,29 @@ const Mainloop = imports.mainloop;
 const Panel = imports.ui.panel;
 const PanelMenu = imports.ui.panelMenu;
 
+let tracker, display, app_system;
 
 function update () {
     let running = app_system.get_running();
     for(var i = 0; i < running.length; i++) {
         let windows = running[i].get_windows();
         for(var j = 0; j < windows.length; j++) {
-            windows[j].get_compositor_private().clear_effects();
-            let fx = new Clutter.DesaturateEffect();
-            windows[j].get_compositor_private().add_effect(fx);
+            let fx = windows[j].get_compositor_private().get_effect('desaturate');
+            if (!fx) {
+                fx = new Clutter.DesaturateEffect();
+                windows[j].get_compositor_private().add_effect_with_name('desaturate', fx);
+            }
+            fx.set_factor(1);
         }
     }
     if(display.focus_window) {
-        display.focus_window.get_compositor_private().clear_effects();
+        let fx = display.focus_window.get_compositor_private().get_effect('desaturate');
+        fx.set_factor(0);
     }
 }
 
 
 function enable() {
-    let tracker = Shell.WindowTracker.get_default();
-    let display = global.display;
-    let app_system = Shell.AppSystem.get_default();
     update();
     tracker.connect('notify::focus-app', update);
     global.window_manager.connect('switch-workspace', update);
@@ -57,6 +59,9 @@ function enable() {
 
 
 function init() {
+    tracker = Shell.WindowTracker.get_default();
+    display = global.display;
+    app_system = Shell.AppSystem.get_default();
 }
 
 
