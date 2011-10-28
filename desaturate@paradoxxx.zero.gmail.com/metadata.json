@@ -1,0 +1,7 @@
+{
+    "shell-version": ["3.2"],
+    "uuid": "desaturate@paradoxxx.zero.gmail.com",
+    "name": "desaturate",
+    "url": "https://github.com/paradoxxxzero/gnome-shell-desaturate-applet",
+    "description": "Desaturate unfocused windows"
+}
