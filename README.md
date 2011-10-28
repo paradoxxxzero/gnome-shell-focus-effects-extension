@@ -1,6 +1,9 @@
 ## Gnome shell desaturate extension
 
-This is in very early stage of developpement, come back later.
+This extension desaturates (removes colors) of non focused window.
+To install, simply clone this repository and put 'desaturate@paradoxxx.zero.gmail.com/' in ~/.local/share/gnome-shell/extensions.
+Or you can add it with gnome-tweak-tool.
+
 
 ### License:
 
