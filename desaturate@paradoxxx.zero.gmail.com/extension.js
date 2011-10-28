@@ -29,35 +29,36 @@ const Mainloop = imports.mainloop;
 const Panel = imports.ui.panel;
 const PanelMenu = imports.ui.panelMenu;
 
-function init() {
+
+function update () {
+    let running = app_system.get_running();
+    for(var i = 0; i < running.length; i++) {
+        let windows = running[i].get_windows();
+        for(var j = 0; j < windows.length; j++) {
+            windows[j].get_compositor_private().clear_effects();
+            let fx = new Clutter.DesaturateEffect();
+            windows[j].get_compositor_private().add_effect(fx);
+        }
+    }
+    if(display.focus_window) {
+        display.focus_window.get_compositor_private().clear_effects();
+    }
 }
+
 
 function enable() {
     let tracker = Shell.WindowTracker.get_default();
     let display = global.display;
     let app_system = Shell.AppSystem.get_default();
-    let update = function () {
-        let running = app_system.get_running();
-        let focus_app = tracker.focus_app;
-        for(var i = 0; i < running.length; i++) {
-            let app = running[i];
-            let windows = running[i].get_windows();
-            for(var j = 0; j < windows.length; j++) {
-                let window = windows[j];
-                window.get_compositor_private().clear_effects();
-                let fx = new Clutter.DesaturateEffect();
-                window.get_compositor_private().add_effect(fx);
-            }
-        }
-        if(display.focus_window) {
-            display.focus_window.get_compositor_private().clear_effects();
-        }
-        global.log("Focus changed");
-    };
     update();
     tracker.connect('notify::focus-app', update);
     global.window_manager.connect('switch-workspace', update);
 }
+
+
+function init() {
+}
+
 
 function disable() {
 }
