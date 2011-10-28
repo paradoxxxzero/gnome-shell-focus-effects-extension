@@ -29,7 +29,7 @@ const Mainloop = imports.mainloop;
 const Panel = imports.ui.panel;
 const PanelMenu = imports.ui.panelMenu;
 
-let tracker, display, app_system;
+let tracker, display, app_system, focus_connection, workspace_connection;
 
 function update () {
     let running = app_system.get_running();
@@ -53,8 +53,8 @@ function update () {
 
 function enable() {
     update();
-    tracker.connect('notify::focus-app', update);
-    global.window_manager.connect('switch-workspace', update);
+    focus_connection = tracker.connect('notify::focus-app', update);
+    workspace_connection = global.window_manager.connect('switch-workspace', update);
 }
 
 
@@ -66,4 +66,13 @@ function init() {
 
 
 function disable() {
+    tracker.disconnect(focus_connection);
+    global.window_manager.disconnect(workspace_connection);
+    let running = app_system.get_running();
+    for(var i = 0; i < running.length; i++) {
+        let windows = running[i].get_windows();
+        for(var j = 0; j < windows.length; j++) {
+            windows[j].get_compositor_private().remove_effect_by_name('desaturate');
+        }
+    }
 }
