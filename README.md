@@ -1,7 +1,10 @@
-## Gnome shell desaturate extension
+## Gnome shell focus effects extension
 
-This extension desaturates (removes colors) of non focused window.
-To install, simply clone this repository and put 'desaturate@paradoxxx.zero.gmail.com/' in ~/.local/share/gnome-shell/extensions.
+This extension allows you to add custom effects on window focus/blur.
+By default it adds a clutter desaturation and an opacity effect.
+You can however customize these effects by editing a file named ~/.ffxrc.json and then switching off and on the extension in gnome-tweak-tool.
+
+To install, simply clone this repository and put 'focus-effects@paradoxxx.zero.gmail.com/' in ~/.local/share/gnome-shell/extensions.
 Or you can add it with gnome-tweak-tool.
 
 

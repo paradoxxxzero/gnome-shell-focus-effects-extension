@@ -1,0 +1,7 @@
+{
+    "shell-version": ["3.2"],
+    "uuid": "focus-effects@paradoxxx.zero.gmail.com",
+    "name": "focus-effects",
+    "url": "https://github.com/paradoxxxzero/gnome-shell-focus-effects-applet",
+    "description": "Apply effects on window focus/blur"
+}

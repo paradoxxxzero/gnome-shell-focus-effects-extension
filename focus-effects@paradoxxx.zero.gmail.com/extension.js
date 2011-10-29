@@ -1,6 +1,7 @@
 /* -*- mode: js2; js2-basic-offset: 4; indent-tabs-mode: nil -*- */
 
-// desaturate: Desaturate unfocused windows
+// focus-effects: Apply effects on window focus/blur
+
 // Copyright (C) 2011 Florian Mounier aka paradoxxxzero
 
 // This program is free software: you can redistribute it and/or m odify
@@ -30,7 +31,7 @@ const Panel = imports.ui.panel;
 const PanelMenu = imports.ui.panelMenu;
 const Tweener = imports.ui.tweener;
 
-let tracker, display, app_system, focus_connection, workspace_connection;
+let tracker, display, app_system, focus_connection, workspace_connection, animations;
 
 function update () {
     let running = app_system.get_running();
@@ -39,28 +40,66 @@ function update () {
         for(var j = 0; j < windows.length; j++) {
             let actor = windows[j].get_compositor_private();
             if(actor) {
-                let fx = actor.get_effect('desaturate');
-                if (!fx) {
-                    fx = new Clutter.DesaturateEffect();
-                    actor.add_effect_with_name('desaturate', fx);
+                if(animations.desaturate) {
+                    let fx = actor.get_effect('desaturate');
+                    if (!fx) {
+                        fx = new Clutter.DesaturateEffect();
+                        actor.add_effect_with_name('desaturate', fx);
+                    }
+                    Tweener.addTween(fx, { factor: 1, time: 2});
                 }
-                Tweener.addTween(fx, { factor: 1, time: 2});
-                Tweener.addTween(actor, { opacity: 200, time: 2});
+                Tweener.addTween(actor, animations.blur);
             }
         }
     }
     if(display.focus_window) {
         let actor = display.focus_window.get_compositor_private();
         if(actor) {
-            let fx = actor.get_effect('desaturate');
-            Tweener.addTween(fx, { factor: 0, time: 2});
-            Tweener.addTween(actor, { opacity: 255, time: 2});
+            if(animations.desaturate) {
+                let fx = actor.get_effect('desaturate');
+                Tweener.addTween(fx, { factor: 0, time: 2});
+            }
+            Tweener.addTween(actor, animations.focus);
         }
     }
 }
 
 
 function enable() {
+    animations = null;
+    let file;
+    try {
+        file = Shell.get_file_contents_utf8_sync('.ffxrc.json');
+    } catch (e) {
+        log('.ffxrc.json not found setting defaults');
+    }
+    if(file) {
+        try {
+            animations = JSON.parse(file);
+            if(!animations.focus || !animations.blur) {
+                throw {
+                    message: 'Invalid json, must constain at least a focus and a blur property'
+                };
+            }
+        } catch (e) {
+            log('.ffxrc.json has errors setting defaults');
+            animations = null;
+            Main.notifyError('Failed to parse ffxrc', e.message);
+        }
+    }
+    // Default animations
+    animations = animations || {
+        desaturate: true,
+        focus: {
+            opacity: 255,
+            time: 2
+        },
+        blur: {
+            opacity: 200,
+            time: 2
+        }
+    };
+    Shell._ffx = { animations: animations };
     update();
     focus_connection = tracker.connect('notify::focus-app', update);
     workspace_connection = global.window_manager.connect('switch-workspace', update);
