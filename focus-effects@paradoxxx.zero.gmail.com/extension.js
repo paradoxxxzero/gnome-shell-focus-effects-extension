@@ -48,6 +48,10 @@ function update () {
                     }
                     Tweener.addTween(fx, { factor: 1, time: 2});
                 }
+                let vertex = new Clutter.Vertex();
+                actor.scale_center_x = vertex.x = actor.width / 2;
+                actor.scale_center_y = vertex.y = actor.height / 2;
+                actor.rotation_center_z = vertex;
                 Tweener.addTween(actor, animations.blur);
             }
         }
@@ -59,6 +63,10 @@ function update () {
                 let fx = actor.get_effect('desaturate');
                 Tweener.addTween(fx, { factor: 0, time: 2});
             }
+            let vertex = new Clutter.Vertex();
+            actor.scale_center_x = vertex.x = actor.width / 2;
+            actor.scale_center_y = vertex.y = actor.height / 2;
+            actor.rotation_center_z = vertex;
             Tweener.addTween(actor, animations.focus);
         }
     }
