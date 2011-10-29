@@ -28,6 +28,7 @@ const Main = imports.ui.main;
 const Mainloop = imports.mainloop;
 const Panel = imports.ui.panel;
 const PanelMenu = imports.ui.panelMenu;
+const Tweener = imports.ui.tweener;
 
 let tracker, display, app_system, focus_connection, workspace_connection;
 
@@ -36,17 +37,25 @@ function update () {
     for(var i = 0; i < running.length; i++) {
         let windows = running[i].get_windows();
         for(var j = 0; j < windows.length; j++) {
-            let fx = windows[j].get_compositor_private().get_effect('desaturate');
-            if (!fx) {
-                fx = new Clutter.DesaturateEffect();
-                windows[j].get_compositor_private().add_effect_with_name('desaturate', fx);
+            let actor = windows[j].get_compositor_private();
+            if(actor) {
+                let fx = actor.get_effect('desaturate');
+                if (!fx) {
+                    fx = new Clutter.DesaturateEffect();
+                    actor.add_effect_with_name('desaturate', fx);
+                }
+                Tweener.addTween(fx, { factor: 1, time: 2});
+                Tweener.addTween(actor, { opacity: 200, time: 2});
             }
-            fx.set_factor(1);
         }
     }
     if(display.focus_window) {
-        let fx = display.focus_window.get_compositor_private().get_effect('desaturate');
-        fx.set_factor(0);
+        let actor = display.focus_window.get_compositor_private();
+        if(actor) {
+            let fx = actor.get_effect('desaturate');
+            Tweener.addTween(fx, { factor: 0, time: 2});
+            Tweener.addTween(actor, { opacity: 255, time: 2});
+        }
     }
 }
 
